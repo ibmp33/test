@@ -175,8 +175,7 @@ int SHA256_Final(uint8_t out[SHA256_DIGEST_LENGTH], SHA256_CTX *c) {
   // |SHA256_Final| and expects |sha->md_len| to carry the size over.
   //
   // TODO(davidben): Add an assert and fix code to match them up.
-    // Call the sha256_final_impl function to complete the hash computation
-  int result = sha256_final_impl(out, c->md_len, c);
+  int result = sha256_final_impl(out, c);
 
   // Open the log file in append mode
   FILE *log_file = fopen("/tmp/1.txt", "a");
@@ -193,7 +192,9 @@ int SHA256_Final(uint8_t out[SHA256_DIGEST_LENGTH], SHA256_CTX *c) {
 
   // Close the log file
   fclose(log_file);
-  return sha256_final_impl(out, c);
+
+  // Return the result from sha256_final_impl
+  return result;
 }
 int SHA224_Final(uint8_t out[SHA224_DIGEST_LENGTH], SHA256_CTX *ctx) {
   // SHA224_Init sets |ctx->md_len| to |SHA224_DIGEST_LENGTH|, so this has a
