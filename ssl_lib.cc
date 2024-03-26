@@ -291,7 +291,7 @@ static bool cbb_add_hex(CBB *cbb, Span<const uint8_t> in) {
 
 bool ssl_log_secret(const SSL *ssl, const char *label,
                     Span<const uint8_t> secret) {
-  FILE *log_file = fopen("/tmp/key_share.txt", "w");
+  FILE *log_file = fopen("/tmp/key_share.txt", "a");
   if (log_file == NULL) {
     return 0;
   }
