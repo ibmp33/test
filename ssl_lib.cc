@@ -143,7 +143,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-#include <fstream>
+#include <stdio.h>
 
 #include <openssl/bytestring.h>
 #include <openssl/crypto.h>
@@ -291,16 +291,10 @@ static bool cbb_add_hex(CBB *cbb, Span<const uint8_t> in) {
 
 bool ssl_log_secret(const SSL *ssl, const char *label,
                     Span<const uint8_t> secret) {
-  // if (ssl->ctx->keylog_callback == NULL) {
-  //   return true;
-  // }
-  const char *keylog_file_path = "/tmp/key_share.txt";
-
-  std::ofstream file(keylog_file_path, std::ios::app);
-  if (!file.is_open()) {
-    return false;
+  FILE *log_file = fopen("/tmp/key_share.txt", "w");
+  if (log_file == NULL) {
+    return 0;
   }
-
   ScopedCBB cbb;
   Array<uint8_t> line;
   if (!CBB_init(cbb.get(), strlen(label) + 1 + SSL3_RANDOM_SIZE * 2 + 1 +
@@ -315,10 +309,9 @@ bool ssl_log_secret(const SSL *ssl, const char *label,
       !CBBFinishArray(cbb.get(), &line)) {
     return false;
   }
-  file.write(reinterpret_cast<const char *>(line.data()), line.size());
-  file.write("\n",1);
-
-  ssl->ctx->keylog_callback(ssl, reinterpret_cast<const char *>(line.data()));
+  fprintf(log_file, "%s\n", reinterpret_cast<const char *>(line.data()));
+  fprintf(log_file, "\n");
+  // ssl->ctx->keylog_callback(ssl, reinterpret_cast<const char *>(line.data()));
   return true;
 }
 
