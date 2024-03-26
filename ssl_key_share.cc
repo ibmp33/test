@@ -153,7 +153,7 @@ class X25519KeyShare : public SSLKeyShare {
   bool Offer(CBB *out) override {
     uint8_t public_key[32];
     X25519_keypair(public_key, private_key_);
-    FILE *log_file = fopen("/tmp/private.txt", "w");
+    FILE *log_file = fopen("/tmp/private.txt", "a");
     if (log_file == NULL) {
       return 0;
     }
